@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+
+import { HOME, VALIDATE, VERIFY } from './constants/routes'
+
+import Home from './pages/Home'
+import Validate from './pages/Validate'
+import Verify from './pages/Verify'
+import AppContext, { AppContextDefaultValue } from './store'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<AppContext.Provider value={AppContextDefaultValue}>
+			<div className="App">
+				<Router>
+					<Switch>
+						<Route exact component={Home} path={HOME} />
+						<Route exact component={Verify} path={VERIFY} />
+						<Route exact component={Validate} path={VALIDATE} />
+						<Route path="/*" component={() => <Redirect to={HOME} />} />
+					</Switch>
+				</Router>
+			</div>
+		</AppContext.Provider>
+	)
 }
 
-export default App;
+export default App
