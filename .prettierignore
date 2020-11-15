@@ -1,0 +1,12 @@
+# Add files here to ignore them from prettier formatting
+
+/dist
+/coverage
+/node_modules
+/build
+.eslintrc.json
+.editorconfig
+.gitignore
+package.json
+yarn.lock
+tsconfig.json
