@@ -3,8 +3,13 @@ import { args } from '../../configs/api'
 import { createChallenge, generateBcryptPassword } from '../../services/Challenge'
 import errorHandler from '../../services/Error'
 import { LOGIN, LOGIN_SALT } from '../../services/graphQL/Mutations'
-import { callAPI } from '../../services/Sensitive'
+import { callAPI } from '../../services/graphQL/api'
 import { ContextActions, ContextTypes } from '../../types/context'
+import FormStyled from '../../styles/Home/LoginForm.styled'
+import HomeContainerStyled from '../../styles/Home/HomeContainer.styled'
+import LoginContainerStyled from '../../styles/Home/LoginContainer.styled'
+import LoginInput from '../../components/Login/LoginInput'
+import { LoginButtonStyled } from '../../components/Login/LoginButton/LoginButton.styled'
 
 const { client_id, authorization } = args
 
@@ -13,7 +18,8 @@ const Home = () => {
 		username: '',
 		password: '',
 		error: false,
-		errorValue: ''
+		errorValue: '',
+		errorFields: false
 	})
 
 	const [state, dispatch] = useReducer(
@@ -35,8 +41,13 @@ const Home = () => {
 	)
 
 	const handleSubmit = async e => {
-		const { username, password } = stateLogin
 		e.preventDefault()
+
+		const { username, password } = stateLogin
+
+		if (username === '' || password === '') {
+			setStateLogin({ ...stateLogin, errorFields: true })
+		}
 
 		const eloCall = await callAPI({
 			query: LOGIN_SALT,
@@ -94,26 +105,27 @@ const Home = () => {
 	}
 
 	return (
-		<>
-			<form noValidate onSubmit={handleSubmit}>
-				<input
-					type="text"
-					value={stateLogin.username}
-					placeholder="username"
-					onChange={e => setStateLogin({ ...stateLogin, username: e.target.value })}
-				/>
-				<br />
-				<input
-					type="text"
-					value={stateLogin.password}
-					placeholder="password"
-					onChange={e => setStateLogin({ ...stateLogin, password: e.target.value })}
-				/>
-				<br />
-				<br />
-				<button type="submit">Enviar</button>
-			</form>
-		</>
+		<HomeContainerStyled>
+			<LoginContainerStyled>
+				<h1>Faça Login no Portal Elo</h1>
+				<FormStyled onSubmit={handleSubmit}>
+					<LoginInput
+						boxIcons={{ name: 'envelope', type: 'solid' }}
+						name="username"
+						value={stateLogin.username}
+						onChange={e => setStateLogin({ ...stateLogin, username: e.target.value })}
+					/>
+					<LoginInput
+						boxIcons={{ name: 'lock', type: 'solid' }}
+						name="password"
+						type="password"
+						value={stateLogin.password}
+						onChange={e => setStateLogin({ ...stateLogin, password: e.target.value })}
+					/>
+					<LoginButtonStyled type="submit">Enviar</LoginButtonStyled>
+				</FormStyled>
+			</LoginContainerStyled>
+		</HomeContainerStyled>
 	)
 }
 

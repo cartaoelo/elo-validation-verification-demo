@@ -26,7 +26,8 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: 400;
     line-height: 1.43;
     letter-spacing: 0.01071em;
-    background-color: #fff;
+    background-color: #f5f5f5;
+    overflow-x: hidden;
     &.dark {
       background-color: #1b1b1b;
       color: #fff;
@@ -41,6 +42,9 @@ export const GlobalStyles = createGlobalStyle`
         background-color: transparent !important;
       }
     }
+  }
+  input, button {
+    border: 0 none;
   }
   @media print {
     body {
