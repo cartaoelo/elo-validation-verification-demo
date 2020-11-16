@@ -1,4 +1,3 @@
-/// <reference types="react-scripts" />
 import { BoxIconsProps } from './types/boxicons'
 
 export declare global {
