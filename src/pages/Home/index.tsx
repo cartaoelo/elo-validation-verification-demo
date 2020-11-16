@@ -1,17 +1,26 @@
 import React, { useReducer, useState } from 'react'
+
 import { args } from '../../configs/api'
+import { callAPI } from '../../services/graphQL/api'
+
 import { createChallenge, generateBcryptPassword } from '../../services/Challenge'
 import errorHandler from '../../services/Error'
-import { LOGIN, LOGIN_SALT } from '../../services/graphQL/Mutations'
-import { callAPI } from '../../services/graphQL/api'
+import { LOGIN, LOGIN_SALT, SOCIAL_LOGIN } from '../../services/graphQL/Mutations'
+
 import { ContextActions, ContextTypes } from '../../types/context'
+
 import FormStyled from '../../styles/Home/LoginForm.styled'
 import HomeContainerStyled from '../../styles/Home/HomeContainer.styled'
 import LoginContainerStyled from '../../styles/Home/LoginContainer.styled'
-import LoginInput from '../../components/Login/LoginInput'
-import { LoginButtonStyled } from '../../components/Login/LoginButton/LoginButton.styled'
+import LoginButtonStyled from '../../components/Login/LoginButton/LoginButton.styled'
 
-const { client_id, authorization } = args
+import LoginInput from '../../components/Login/LoginInput'
+import iziToast from 'izitoast'
+import LoginSocialText from '../../components/Login/LoginSocial/LoginSocial.styled'
+
+import GoogleLogin from 'react-google-login'
+
+const { client_id, authorization, google_id } = args
 
 const Home = () => {
 	const [stateLogin, setStateLogin] = useState({
@@ -47,6 +56,10 @@ const Home = () => {
 
 		if (username === '' || password === '') {
 			setStateLogin({ ...stateLogin, errorFields: true })
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Veja se você preencheu todos os campos!'
+			})
 		}
 
 		const eloCall = await callAPI({
@@ -87,6 +100,11 @@ const Home = () => {
 				dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
 				console.log('reducer', state.access_token)
 				console.log('state', state.access_token)
+
+				iziToast.success({
+					title: 'Sucesso',
+					message: `Aqui está seu Access Token: ${accessToken}`
+				})
 			} else console.log(loginCall)
 
 			setStateLogin({
@@ -100,6 +118,31 @@ const Home = () => {
 				...stateLogin,
 				error: true,
 				errorValue: erro
+			})
+		}
+	}
+
+	const handleSocialLogin = async response => {
+		console.log(response)
+		const { accessToken, profileObj } = response
+		const socialCall = await callAPI({
+			client_id,
+			query: SOCIAL_LOGIN,
+			variables: {
+				provider: 'GOOGLE',
+				username: profileObj.email,
+				accessToken
+			},
+			headers: {
+				authorization
+			}
+		})
+		const socialResponse = await socialCall.json()
+		if (socialResponse) {
+			const { description } = JSON.parse(socialResponse.errors[0].message)[0]
+			return iziToast.error({
+				title: 'Erro',
+				message: `Houve um erro na chamada da API ao Portal, descrição do erro: ${description}`
 			})
 		}
 	}
@@ -124,6 +167,15 @@ const Home = () => {
 					/>
 					<LoginButtonStyled type="submit">Enviar</LoginButtonStyled>
 				</FormStyled>
+				<LoginSocialText>
+					<span>Ou entre com</span>
+				</LoginSocialText>
+				<GoogleLogin
+					clientId={google_id}
+					buttonText="Google"
+					onSuccess={handleSocialLogin}
+					onFailure={() => alert('Erro ao chamar API do Google')}
+				/>
 			</LoginContainerStyled>
 		</HomeContainerStyled>
 	)

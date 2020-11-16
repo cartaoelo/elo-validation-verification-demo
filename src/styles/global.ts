@@ -44,6 +44,7 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
   input, button {
+    outline: 0;
     border: 0 none;
   }
   @media print {
