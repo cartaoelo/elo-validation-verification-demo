@@ -18,35 +18,9 @@ export async function encryptCardData({ cardData, eloKey, kid }) {
 	const serverKey = JSON.parse(eloKey)
 	serverKey.kid = kid
 
-	if (jwk) {
-		const signedJws = await jwsSign({ input: cardSensitiveDataStringified, key: jwk })
-		const sensitive = await jweEncrypt({ input: signedJws, key: serverKey })
-		return { sensitive, key }
-	}
-}
+	if (!jwk) console.log(jwk)
 
-export const callAPI = async ({
-	client_id,
-	variables,
-	query,
-	headers
-}: {
-	client_id: string
-	variables: Record<string, unknown>
-	query: string
-	headers?: Record<string, unknown>
-}) => {
-	const response = await fetch('https://hml-api.elo.com.br/graphql', {
-		method: 'POST',
-		headers: {
-			...headers,
-			'Content-Type': 'application/json',
-			client_id
-		},
-		body: JSON.stringify({
-			query,
-			variables
-		})
-	})
-	return response
+	const signedJws = await jwsSign({ input: cardSensitiveDataStringified, key: jwk })
+	const sensitive = await jweEncrypt({ input: signedJws, key: serverKey })
+	return { sensitive, key }
 }
