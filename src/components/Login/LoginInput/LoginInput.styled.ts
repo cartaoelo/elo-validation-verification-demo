@@ -16,7 +16,7 @@ export const LoginInputStyled = styled.input`
 	padding: 0 30px 0 65px;
 
 	&:focus {
-		border: 0.5 solid #686868;
+		border: 0.5px solid #686868;
 	}
 `
 
