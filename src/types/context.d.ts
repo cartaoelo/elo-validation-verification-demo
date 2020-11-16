@@ -5,5 +5,5 @@ export interface ContextTypes {
 
 export type ContextActions = {
 	type: 'CHANGE_ACCESSTOKEN' | ''
-	payload: any
+	payload: unknown
 }
