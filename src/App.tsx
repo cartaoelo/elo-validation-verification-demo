@@ -2,14 +2,15 @@ import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import PrivateRoute from './components/PrivateRoute'
 
-import { HOME, VALIDATE, VERIFY } from './constants/routes'
+import { HOME, ADDCARD, VALIDATECPF } from './constants/routes'
 
 import Home from './pages/Home'
-import Validate from './pages/Validate'
-import Verify from './pages/Verify'
 import AppContext, { AppContextDefaultValue } from './store'
 
 import AppStyled from './styles/App.styled'
+import BackgroundContainerStyled from './styles/Background'
+import AddCard from './pages/AddCard'
+import ValidateCPF from './pages/ValidateCPF'
 
 function App() {
 	return (
@@ -17,10 +18,12 @@ function App() {
 			<AppStyled className="App">
 				<Router>
 					<Switch>
-						<Route exact component={Home} path={HOME} />
-						<PrivateRoute exact component={Verify} path={VERIFY} />
-						<PrivateRoute exact component={Validate} path={VALIDATE} />
-						<Route path="/*" component={() => <Redirect to={HOME} />} />
+						<BackgroundContainerStyled>
+							<Route exact component={Home} path={HOME} />
+							<Route exact component={AddCard} path={ADDCARD} />
+							<Route exact component={ValidateCPF} path={VALIDATECPF} />
+							<Route path="/*" component={() => <Redirect to={HOME} />} />
+						</BackgroundContainerStyled>
 					</Switch>
 				</Router>
 			</AppStyled>
