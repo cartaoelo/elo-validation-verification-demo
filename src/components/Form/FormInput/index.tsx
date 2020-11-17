@@ -1,8 +1,8 @@
 import React from 'react'
 import { BoxIconsProps } from '../../../types/boxicons'
-import { LoginDivStyled, LoginInputStyled, LoginInputIcon } from './LoginInput.styled'
+import { FormDivStyled, FormInputStyled, FormInputIcon } from './FormInput.styled'
 
-interface LoginProps
+interface FormProps
 	extends Omit<
 		React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
 		'ref' | 'name'
@@ -11,18 +11,18 @@ interface LoginProps
 	name: string
 }
 
-const LoginInput = ({ boxIcons, name, ...rest }: LoginProps) => {
+const FormInput = ({ boxIcons, name, ...rest }: FormProps) => {
 	return (
-		<LoginDivStyled>
-			<LoginInputStyled
+		<FormDivStyled>
+			<FormInputStyled
 				placeholder={name.charAt(0).toUpperCase() + name.slice(1)}
 				{...rest}
 			/>
-			<LoginInputIcon>
+			<FormInputIcon>
 				<box-icon {...boxIcons} color="#b3b3b3"></box-icon>
-			</LoginInputIcon>
-		</LoginDivStyled>
+			</FormInputIcon>
+		</FormDivStyled>
 	)
 }
 
-export default LoginInput
+export default FormInput
