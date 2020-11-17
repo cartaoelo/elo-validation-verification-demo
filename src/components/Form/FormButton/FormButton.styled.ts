@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const LoginButtonStyled = styled.button`
+const FormButtonStyled = styled.button`
 	font-size: 16px;
 	width: 100%;
 	height: 62px;
@@ -26,4 +26,4 @@ const LoginButtonStyled = styled.button`
 	}
 `
 
-export default LoginButtonStyled
+export default FormButtonStyled

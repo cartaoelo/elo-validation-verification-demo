@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 
-export const LoginDivStyled = styled.div`
+export const FormDivStyled = styled.div`
 	position: relative;
 	width: 100%;
 	margin-bottom: 16px;
 `
 
-export const LoginInputStyled = styled.input`
+export const FormInputStyled = styled.input`
 	font-size: 18px;
 	color: #686868;
 	display: block;
@@ -20,7 +20,7 @@ export const LoginInputStyled = styled.input`
 	}
 `
 
-export const LoginInputIcon = styled.span`
+export const FormInputIcon = styled.span`
 	color: #999;
 	display: flex;
 	align-items: center;
