@@ -65,12 +65,6 @@
       "no-console": "off",
       "no-nested-ternary": "off",
       "no-use-before-define": "off",
-      "prefer-arrow-callback": [
-        "error",
-        {
-          "allowUnboundThis": true
-        }
-      ],
       "radix": "off",
       "prefer-const": [
         "error",
