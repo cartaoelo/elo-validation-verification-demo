@@ -10,26 +10,31 @@ import { LOGIN, LOGIN_SALT, SOCIAL_LOGIN } from '../../services/graphQL/Mutation
 import { ContextActions, ContextTypes } from '../../types/context'
 
 import FormStyled from '../../styles/Home/LoginForm.styled'
-import HomeContainerStyled from '../../styles/Home/HomeContainer.styled'
 import LoginContainerStyled from '../../styles/Home/LoginContainer.styled'
-import LoginButtonStyled from '../../components/Login/LoginButton/LoginButton.styled'
+import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
 
-import LoginInput from '../../components/Login/LoginInput'
+import FormInput from '../../components/Form/FormInput'
 import iziToast from 'izitoast'
 import LoginSocialText from '../../components/Login/LoginSocial/LoginSocial.styled'
 
 import GoogleLogin, { GoogleLoginResponse } from 'react-google-login'
+import { useHistory } from 'react-router-dom'
+
+import { ADDCARD } from '../../constants/routes'
 
 const { client_id, authorization, google_id } = args
 
 const Home = () => {
+	const history = useHistory()
+
 	const [stateLogin, setStateLogin] = useState({
 		username: '',
 		password: '',
 		error: false,
 		errorValue: '',
 		errorFields: false,
-		googleDisabled: false
+		googleDisabled: false,
+		ended: false
 	})
 
 	const [state, dispatch] = useReducer(
@@ -106,6 +111,9 @@ const Home = () => {
 					title: 'Sucesso',
 					message: `Aqui está seu Access Token: ${accessToken}`
 				})
+
+				setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 3500)
+				setTimeout(() => history.push(ADDCARD), 5000)
 			} else console.log(loginCall)
 
 			setStateLogin({
@@ -140,7 +148,7 @@ const Home = () => {
 				authorization
 			}
 		})
-		// const socialResponse = await socialCall.json()
+
 		if (!socialCall.ok) {
 			const socialResponse = await socialCall.json()
 			const { description } = JSON.parse(socialResponse.errors[0].message)[0]
@@ -166,44 +174,53 @@ const Home = () => {
 			title: 'Sucesso',
 			message: `Aqui está seu Access Token: ${accessToken}`
 		})
+
+		setTimeout(() => {
+			iziToast.info({
+				title: 'Aviso',
+				message: 'Estamos te redirecionando para o ADDCARD',
+				timeout: 3000
+			})
+		}, 2000)
+
+		setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
+		setTimeout(() => history.push(ADDCARD), 5000)
 	}
 
 	return (
-		<HomeContainerStyled>
-			<LoginContainerStyled>
-				<h1>Faça Login no Portal Elo</h1>
-				<FormStyled onSubmit={handleSubmit}>
-					<LoginInput
-						boxIcons={{ name: 'envelope', type: 'solid' }}
-						name="username"
-						value={stateLogin.username}
-						onChange={e => setStateLogin({ ...stateLogin, username: e.target.value })}
-					/>
-					<LoginInput
-						boxIcons={{ name: 'lock', type: 'solid' }}
-						name="password"
-						type="password"
-						value={stateLogin.password}
-						onChange={e => setStateLogin({ ...stateLogin, password: e.target.value })}
-					/>
-					<LoginButtonStyled type="submit">Enviar</LoginButtonStyled>
-				</FormStyled>
-				<LoginSocialText>
-					<span>Ou entre com</span>
-				</LoginSocialText>
-				<GoogleLogin
-					clientId={google_id}
-					cookiePolicy={'none'}
-					buttonText="Google"
-					onSuccess={handleSocialLogin}
-					onFailure={e => {
-						console.log(e)
-						setStateLogin({ ...stateLogin, googleDisabled: true })
-					}}
-					disabled={stateLogin.googleDisabled}
+		<LoginContainerStyled out={stateLogin.ended}>
+			<h1>Faça Login no Portal Elo</h1>
+			<FormStyled onSubmit={handleSubmit}>
+				<FormInput
+					boxIcons={{ name: 'envelope', type: 'solid' }}
+					name="username"
+					value={stateLogin.username}
+					onChange={e => setStateLogin({ ...stateLogin, username: e.target.value })}
 				/>
-			</LoginContainerStyled>
-		</HomeContainerStyled>
+				<FormInput
+					boxIcons={{ name: 'lock', type: 'solid' }}
+					name="password"
+					type="password"
+					value={stateLogin.password}
+					onChange={e => setStateLogin({ ...stateLogin, password: e.target.value })}
+				/>
+				<FormButtonStyled type="submit">Enviar</FormButtonStyled>
+			</FormStyled>
+			<LoginSocialText>
+				<span>Ou entre com</span>
+			</LoginSocialText>
+			<GoogleLogin
+				clientId={google_id}
+				cookiePolicy={'none'}
+				buttonText="Google"
+				onSuccess={handleSocialLogin}
+				onFailure={e => {
+					console.log(e)
+					setStateLogin({ ...stateLogin, googleDisabled: true })
+				}}
+				disabled={stateLogin.googleDisabled}
+			/>
+		</LoginContainerStyled>
 	)
 }
 
