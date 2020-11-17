@@ -1,63 +1,55 @@
 import React, { ChangeEvent, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import AddCardStyled from '../../components/AddCard/AddCard.styled'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
 import FormInput from '../../components/Form/FormInput'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 
-interface Card {
-	pan: string
-	csc: string
-	name: string
-	expiry: {
-		year: string
-		month: string
-	}
-}
-
-interface StateCard {
-	card: Card
-	ended: boolean
-}
-
 const AddCard = () => {
-	const [stateCard, setStateCard] = useState<StateCard>({
-		card: {
-			pan: '',
-			csc: '',
-			name: '',
-			expiry: {
-				year: '',
-				month: ''
-			}
-		},
+	const { handleSubmit, register } = useForm()
+	const [stateCard, setStateCard] = useState({
 		ended: false
 	})
 
-	const handleChange = (key: keyof Card) => (e: ChangeEvent<HTMLInputElement>) => {
-		setStateCard({
-			...stateCard,
-			card: {
-				...stateCard.card,
-				[key]: e.target.value
-			}
-		})
-	}
-
-	const handleSubmit = e => {
-		return
-	}
+	const onSubmit = handleSubmit(async values => {
+		return ''
+	})
 
 	return (
 		<AddCardStyled>
 			<h1>Faça Login no Portal Elo</h1>
-			<FormStyled onSubmit={handleSubmit}>
+			<FormStyled onSubmit={onSubmit}>
 				<FormInput
 					boxIcons={{ name: 'envelope', type: 'solid' }}
-					name="nome"
-					value={stateCard.card.name}
-					onChange={handleChange('name')}
+					name="pan"
+					required
+					ref={register}
 				/>
-				<FormButtonStyled type="submit">Enviar</FormButtonStyled>
+				<div className="">
+					<FormInput
+						calendar
+						boxIcons={{ name: 'envelope', type: 'solid' }}
+						name="month"
+						required
+						ref={register}
+					/>
+					<FormInput
+						calendar
+						boxIcons={{ name: '', type: 'solid' }}
+						name="year"
+						required
+						ref={register}
+					/>
+				</div>
+				<FormInput
+					required
+					boxIcons={{ name: 'user', type: 'solid' }}
+					name="name"
+					ref={register}
+				/>
+				<FormButtonStyled type="submit" disabled={stateCard.ended}>
+					Enviar
+				</FormButtonStyled>
 			</FormStyled>
 		</AddCardStyled>
 	)
