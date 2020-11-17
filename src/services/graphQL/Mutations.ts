@@ -31,3 +31,20 @@ export const SOCIAL_LOGIN = `
     }
   }
 `
+
+export const VERIFY_PROFILE_SCORE = `
+  query verifyProfileScore($cpf: String!){
+    verifyProfileScore(cpf: $cpf){
+        score {
+           value
+          spendingIndex
+          digitalVarietyRisk
+          digitalBehaviourRisk
+          profileRisk
+          statusRisk
+          postalRisk
+          rapportRisk
+        }
+    }
+}
+`

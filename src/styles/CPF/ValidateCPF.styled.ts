@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const ValidateCPFContainerStyled = styled.div`
-	padding: 77px 30px 50px;
+	padding: 60px 70px 50px;
 	background-color: #fff;
 	border-radius: 5px;
 	width: 450px;
@@ -12,9 +12,16 @@ const ValidateCPFContainerStyled = styled.div`
 	animation: ${({ out }: { out: boolean }) => out && '.5s ease-out 1 slideToTop'};
 
 	h1 {
-		font-size: 30px;
+		font-size: 25px;
 		text-align: center;
-		margin-bottom: 55px;
+		margin-bottom: 10px;
+	}
+
+	h3 {
+		font-size: 16px;
+		color: #b2b2b2;
+		text-align: center;
+		margin-bottom: 40px;
 	}
 
 	@media only screen and (max-width: 1200px) {
