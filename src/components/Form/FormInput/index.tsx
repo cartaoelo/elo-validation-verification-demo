@@ -1,21 +1,19 @@
-import React from 'react'
-import { BoxIconsProps } from '../../../types/boxicons'
+import React, { forwardRef } from 'react'
+import { FormProp } from '../../../types/form'
 import { FormDivStyled, FormInputStyled, FormInputIcon } from './FormInput.styled'
 
-interface FormProps
-	extends Omit<
-		React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-		'ref' | 'name'
-	> {
-	boxIcons: BoxIconsProps
-	name: string
-}
-
-const FormInput = ({ boxIcons, name, ...rest }: FormProps) => {
+const FormInput = forwardRef<any, FormProp>(function FormInput(
+	{ name, calendar, mask, boxIcons, ...rest },
+	ref
+) {
 	return (
 		<FormDivStyled>
 			<FormInputStyled
+				calendar={calendar}
 				placeholder={name.charAt(0).toUpperCase() + name.slice(1)}
+				inputRef={ref}
+				mask={mask}
+				name={name}
 				{...rest}
 			/>
 			<FormInputIcon>
@@ -23,6 +21,6 @@ const FormInput = ({ boxIcons, name, ...rest }: FormProps) => {
 			</FormInputIcon>
 		</FormDivStyled>
 	)
-}
+})
 
 export default FormInput
