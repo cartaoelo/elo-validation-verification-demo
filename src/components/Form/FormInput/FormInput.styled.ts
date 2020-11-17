@@ -1,3 +1,4 @@
+import MaskedInput from 'react-input-mask'
 import styled from 'styled-components'
 
 export const FormDivStyled = styled.div`
@@ -6,14 +7,16 @@ export const FormDivStyled = styled.div`
 	margin-bottom: 16px;
 `
 
-export const FormInputStyled = styled.input`
+export const FormInputStyled = styled(MaskedInput)`
+	width: 100%;
 	font-size: 18px;
 	color: #686868;
 	display: block;
 	background-color: #e6e6e6;
 	height: 62px;
 	border-radius: 5px;
-	padding: 0 30px 0 65px;
+	padding: ${({ calendar }: { calendar: boolean }) =>
+		calendar ? '0 30px 0 65px' : '0 30px 0 65px'};
 
 	&:focus {
 		border: 0.5px solid #686868;

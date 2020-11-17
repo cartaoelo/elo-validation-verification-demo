@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const LoginSocialText = styled.div`
+const LoginSocialText = styled.span`
 	margin-bottom: 22px;
 	margin-top: 42px;
 	span {
