@@ -18,7 +18,7 @@ import LoginInput from '../../components/Login/LoginInput'
 import iziToast from 'izitoast'
 import LoginSocialText from '../../components/Login/LoginSocial/LoginSocial.styled'
 
-import GoogleLogin from 'react-google-login'
+import GoogleLogin, { GoogleLoginResponse } from 'react-google-login'
 
 const { client_id, authorization, google_id } = args
 
@@ -28,7 +28,8 @@ const Home = () => {
 		password: '',
 		error: false,
 		errorValue: '',
-		errorFields: false
+		errorFields: false,
+		googleDisabled: false
 	})
 
 	const [state, dispatch] = useReducer(
@@ -123,28 +124,48 @@ const Home = () => {
 	}
 
 	const handleSocialLogin = async response => {
-		console.log(response)
-		const { accessToken, profileObj } = response
+		const {
+			tokenId,
+			profileObj
+		}: Pick<GoogleLoginResponse, 'tokenId' | 'profileObj'> = response
 		const socialCall = await callAPI({
 			client_id,
 			query: SOCIAL_LOGIN,
 			variables: {
 				provider: 'GOOGLE',
 				username: profileObj.email,
-				accessToken
+				accessToken: tokenId
 			},
 			headers: {
 				authorization
 			}
 		})
-		const socialResponse = await socialCall.json()
-		if (socialResponse) {
+		// const socialResponse = await socialCall.json()
+		if (!socialCall.ok) {
+			const socialResponse = await socialCall.json()
 			const { description } = JSON.parse(socialResponse.errors[0].message)[0]
 			return iziToast.error({
 				title: 'Erro',
 				message: `Houve um erro na chamada da API ao Portal, descrição do erro: ${description}`
 			})
 		}
+
+		const { data } = await socialCall.json()
+
+		const {
+			socialNetworkOAuthLogin: { accessToken }
+		} = data
+
+		console.log(data)
+
+		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
+		console.log('reducer', state.access_token)
+		console.log('state', state.access_token)
+
+		iziToast.success({
+			title: 'Sucesso',
+			message: `Aqui está seu Access Token: ${accessToken}`
+		})
 	}
 
 	return (
@@ -172,9 +193,14 @@ const Home = () => {
 				</LoginSocialText>
 				<GoogleLogin
 					clientId={google_id}
+					cookiePolicy={'none'}
 					buttonText="Google"
 					onSuccess={handleSocialLogin}
-					onFailure={() => alert('Erro ao chamar API do Google')}
+					onFailure={e => {
+						console.log(e)
+						setStateLogin({ ...stateLogin, googleDisabled: true })
+					}}
+					disabled={stateLogin.googleDisabled}
 				/>
 			</LoginContainerStyled>
 		</HomeContainerStyled>
