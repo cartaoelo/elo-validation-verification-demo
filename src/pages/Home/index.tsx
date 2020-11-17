@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react'
+import React, { FormEvent, useReducer, useState } from 'react'
 
 import { args } from '../../configs/api'
 import { callAPI } from '../../services/graphQL/api'
@@ -20,16 +20,22 @@ import LoginSocialText from '../../components/Login/LoginSocial/LoginSocial.styl
 import GoogleLogin, { GoogleLoginResponse } from 'react-google-login'
 import { useHistory } from 'react-router-dom'
 
-import { ADDCARD } from '../../constants/routes'
+import { VALIDATECPF } from '../../constants/routes'
+import { useForm } from 'react-hook-form'
+
+interface FormData {
+	username: string
+	password: string
+}
 
 const { client_id, authorization, google_id } = args
 
 const Home = () => {
+	const { register, handleSubmit } = useForm<FormData>()
+
 	const history = useHistory()
 
 	const [stateLogin, setStateLogin] = useState({
-		username: '',
-		password: '',
 		error: false,
 		errorValue: '',
 		errorFields: false,
@@ -55,11 +61,8 @@ const Home = () => {
 		}
 	)
 
-	const handleSubmit = async e => {
-		e.preventDefault()
-
-		const { username, password } = stateLogin
-
+	const onSubmit = handleSubmit(async ({ username, password }) => {
+		console.log(username)
 		if (username === '' || password === '') {
 			setStateLogin({ ...stateLogin, errorFields: true })
 			return iziToast.error({
@@ -107,13 +110,15 @@ const Home = () => {
 				console.log('reducer', state.access_token)
 				console.log('state', state.access_token)
 
+				localStorage.setItem('accessToken', accessToken)
+
 				iziToast.success({
 					title: 'Sucesso',
 					message: `Aqui está seu Access Token: ${accessToken}`
 				})
 
-				setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 3500)
-				setTimeout(() => history.push(ADDCARD), 5000)
+				setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
+				setTimeout(() => history.push(VALIDATECPF), 5000)
 			} else console.log(loginCall)
 
 			setStateLogin({
@@ -129,9 +134,9 @@ const Home = () => {
 				errorValue: erro
 			})
 		}
-	}
+	})
 
-	const handleSocialLogin = async response => {
+	const onSocialLogin = async response => {
 		const {
 			tokenId,
 			profileObj
@@ -166,7 +171,9 @@ const Home = () => {
 
 		console.log(data)
 
+		localStorage.setItem('accessToken', accessToken)
 		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
+
 		console.log('reducer', state.access_token)
 		console.log('state', state.access_token)
 
@@ -178,31 +185,29 @@ const Home = () => {
 		setTimeout(() => {
 			iziToast.info({
 				title: 'Aviso',
-				message: 'Estamos te redirecionando para o ADDCARD',
+				message: 'Estamos te redirecionando para a próxima tela',
 				timeout: 3000
 			})
 		}, 2000)
 
 		setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
-		setTimeout(() => history.push(ADDCARD), 5000)
+		setTimeout(() => history.push(VALIDATECPF), 5000)
 	}
 
 	return (
 		<LoginContainerStyled out={stateLogin.ended}>
 			<h1>Faça Login no Portal Elo</h1>
-			<FormStyled onSubmit={handleSubmit}>
+			<FormStyled onSubmit={onSubmit}>
 				<FormInput
 					boxIcons={{ name: 'envelope', type: 'solid' }}
 					name="username"
-					value={stateLogin.username}
-					onChange={e => setStateLogin({ ...stateLogin, username: e.target.value })}
+					ref={register}
 				/>
 				<FormInput
 					boxIcons={{ name: 'lock', type: 'solid' }}
 					name="password"
 					type="password"
-					value={stateLogin.password}
-					onChange={e => setStateLogin({ ...stateLogin, password: e.target.value })}
+					ref={register}
 				/>
 				<FormButtonStyled type="submit">Enviar</FormButtonStyled>
 			</FormStyled>
@@ -213,7 +218,7 @@ const Home = () => {
 				clientId={google_id}
 				cookiePolicy={'none'}
 				buttonText="Google"
-				onSuccess={handleSocialLogin}
+				onSuccess={onSocialLogin}
 				onFailure={e => {
 					console.log(e)
 					setStateLogin({ ...stateLogin, googleDisabled: true })
