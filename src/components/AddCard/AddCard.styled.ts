@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const AddCardStyled = styled.div`
-	padding: 77px 30px 50px;
+	padding: 60px 70px 50px;
 	background-color: #fff;
 	border-radius: 5px;
 	width: 450px;
