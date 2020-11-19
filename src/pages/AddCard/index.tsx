@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState } from 'react'
+import iziToast from 'izitoast'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import AddCardStyled from '../../components/AddCard/AddCard.styled'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
@@ -7,12 +8,21 @@ import FormMonthYearStyled from '../../components/Form/FormMonthYear/FormMonthYe
 import FormStyled from '../../styles/Home/LoginForm.styled'
 
 const AddCard = () => {
-	const { handleSubmit, register } = useForm()
+	const { handleSubmit, register } = useForm({
+		criteriaMode: 'all',
+		mode: 'onSubmit',
+		shouldFocusError: true,
+		reValidateMode: 'onSubmit'
+	})
 	const [stateCard, setStateCard] = useState({
-		ended: false
+		ended: false,
+		buttonLoading: false,
+		buttonText: ''
 	})
 
 	const onSubmit = handleSubmit(async values => {
+		console.log(values)
+
 		return ''
 	})
 
@@ -24,22 +34,41 @@ const AddCard = () => {
 					boxIcons={{ name: 'credit-card', type: 'solid' }}
 					name="pan"
 					required
-					ref={register}
+					mask="9999 9999 9999 9999"
+					ref={register({ required: true })}
 				/>
 				<FormMonthYearStyled>
 					<FormInput
-						calendar
 						boxIcons={{ name: 'calendar', type: 'solid' }}
-						name="month"
+						name="mês"
 						required
-						ref={register}
+						maxLength={2}
+						minLength={2}
+						min={1}
+						max={12}
+						ref={register({
+							required: true,
+							maxLength: 2,
+							minLength: 2,
+							min: 1,
+							max: 12
+						})}
 					/>
 					<FormInput
-						calendar
 						boxIcons={{ name: 'calendar-alt', type: 'solid' }}
-						name="year"
+						name="ano"
 						required
-						ref={register}
+						min={new Date().getUTCFullYear()}
+						max={new Date().getUTCFullYear() + 10}
+						maxLength={4}
+						minLength={4}
+						ref={register({
+							required: true,
+							maxLength: 4,
+							minLength: 4,
+							min: new Date().getUTCFullYear(),
+							max: new Date().getUTCFullYear() + 10
+						})}
 					/>
 				</FormMonthYearStyled>
 				<FormInput
