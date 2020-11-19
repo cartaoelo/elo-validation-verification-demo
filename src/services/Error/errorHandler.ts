@@ -1,4 +1,8 @@
-const errorHandler = ({ status }) => {
+interface ErrorProps {
+	status: number | string
+}
+
+const errorHandler = ({ status }: ErrorProps) => {
 	let erro
 	switch (status) {
 		case 401:
@@ -39,6 +43,14 @@ const errorHandler = ({ status }) => {
 				text: 'Não foi possível criptografar o cartão! Analise seus dados!',
 				json: {
 					error: 'Encrypt Failed'
+				}
+			}
+			return erro
+		case 'locked':
+			erro = {
+				text: 'Não foi possível fazer login! Consulte a administração!',
+				json: {
+					error: 'Unknown Error'
 				}
 			}
 			return erro
