@@ -10,7 +10,7 @@ export const callAPI = async ({
 	variables: Record<string, unknown>
 	query: string
 	headers?: Record<string, unknown>
-}) => {
+}): Promise<Response> => {
 	const response = await fetch(args.graphQLurl, {
 		method: 'POST',
 		headers: {

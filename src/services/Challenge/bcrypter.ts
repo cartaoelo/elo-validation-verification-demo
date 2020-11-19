@@ -15,7 +15,6 @@ export function generateSaltFromUsername({ username }) {
 		hexToBytes({ hex: usernameSha256.toString() }),
 		16
 	)}`
-	console.log('generatedSalt', generatedSalt)
 	return generatedSalt
 }
 
