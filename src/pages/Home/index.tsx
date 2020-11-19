@@ -1,10 +1,11 @@
-import React, { FormEvent, useReducer, useState } from 'react'
+import React, { useReducer, useState } from 'react'
 
 import { args } from '../../configs/api'
 import { callAPI } from '../../services/graphQL/api'
 
 import { createChallenge, generateBcryptPassword } from '../../services/Challenge'
-import errorHandler from '../../services/Error'
+import errorHandler from '../../services/Error/errorHandler'
+import callApiErrorHandler from '../../services/Error/callApiErrorHandler'
 import { LOGIN, LOGIN_SALT, SOCIAL_LOGIN } from '../../services/graphQL/Mutations'
 
 import { ContextActions, ContextTypes } from '../../types/context'
@@ -61,8 +62,9 @@ const Home = () => {
 		}
 	)
 
-	const onSubmit = handleSubmit(async ({ username, password }) => {
-		console.log(username)
+	const onSubmit = handleSubmit(async values => {
+		console.log('[values]', values)
+		const { username, password } = values
 		if (username === '' || password === '') {
 			setStateLogin({ ...stateLogin, errorFields: true })
 			return iziToast.error({
@@ -76,71 +78,84 @@ const Home = () => {
 			variables: { username },
 			client_id
 		})
+		const eloRes = await eloCall.json()
 
-		if (eloCall.ok) {
-			const { data: saltData } = await eloCall.json()
-			const { salt: eloSalt } = saltData.createLoginSalt
+		callApiErrorHandler({
+			call: eloCall,
+			res: eloRes,
+			state: stateLogin,
+			setState: setStateLogin
+		})
 
-			const bcryptPassword = generateBcryptPassword({
+		const { salt: eloSalt } = eloRes.data.createLoginSalt
+
+		const bcryptPassword = generateBcryptPassword({
+			username,
+			password
+		})
+
+		const challenge = createChallenge({ eloSalt, bcryptPassword })
+
+		const loginCall = await callAPI({
+			client_id,
+			query: LOGIN,
+			variables: {
 				username,
-				password
+				challenge
+			},
+			headers: {
+				authorization
+			}
+		})
+		const resLoginJSON = await loginCall.json()
+
+		callApiErrorHandler({
+			call: loginCall,
+			res: resLoginJSON,
+			state: stateLogin,
+			setState: setStateLogin
+		})
+
+		const {
+			data: {
+				login: { accessToken }
+			}
+		} = resLoginJSON
+
+		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
+		console.log('reducer', state.access_token)
+		console.log('state', state.access_token)
+
+		localStorage.setItem('accessToken', accessToken)
+
+		iziToast.success({
+			title: 'Sucesso',
+			message: `Aqui está seu Access Token: ${accessToken}`
+		})
+
+		setTimeout(() => {
+			iziToast.info({
+				title: 'Aviso',
+				message: 'Estamos te redirecionando para a próxima tela',
+				timeout: 3000
 			})
+		}, 2000)
+		setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
+		setTimeout(() => history.push(VALIDATECPF), 5000)
 
-			const challenge = createChallenge({ eloSalt, bcryptPassword })
-
-			const loginCall = await callAPI({
-				client_id,
-				query: LOGIN,
-				variables: {
-					username,
-					challenge
-				},
-				headers: {
-					authorization
-				}
-			})
-
-			if (loginCall.ok) {
-				const { data: loginData } = await loginCall.json()
-				const {
-					login: { accessToken }
-				} = loginData
-
-				dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
-				console.log('reducer', state.access_token)
-				console.log('state', state.access_token)
-
-				localStorage.setItem('accessToken', accessToken)
-
-				iziToast.success({
-					title: 'Sucesso',
-					message: `Aqui está seu Access Token: ${accessToken}`
-				})
-
-				setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
-				setTimeout(() => history.push(VALIDATECPF), 5000)
-			} else console.log(loginCall)
-
-			setStateLogin({
-				...stateLogin,
-				error: false
-			})
-		} else {
-			const { status } = eloCall
-			const erro = errorHandler({ status })
-			setStateLogin({
-				...stateLogin,
-				error: true,
-				errorValue: erro
-			})
-		}
+		setStateLogin({
+			...stateLogin,
+			error: false
+		})
 	})
 
 	const onSocialLogin = async response => {
+		console.log(response)
 		const {
 			tokenId,
 			profileObj
 		}: Pick<GoogleLoginResponse, 'tokenId' | 'profileObj'> = response
+
 		const socialCall = await callAPI({
 			client_id,
 			query: SOCIAL_LOGIN,
@@ -154,22 +169,22 @@ const Home = () => {
 			}
 		})
 
-		if (!socialCall.ok) {
-			const socialResponse = await socialCall.json()
-			const { description } = JSON.parse(socialResponse.errors[0].message)[0]
-			return iziToast.error({
-				title: 'Erro',
-				message: `Houve um erro na chamada da API ao Portal, descrição do erro: ${description}`
-			})
-		}
+		const resSocialJSON = await socialCall.json()
 
-		const { data } = await socialCall.json()
+		const errorHandler = callApiErrorHandler({
+			call: socialCall,
+			res: resSocialJSON,
+			state: stateLogin,
+			setState: setStateLogin
+		})
+
+		if (!errorHandler) return errorHandler
 
 		const {
-			socialNetworkOAuthLogin: { accessToken }
-		} = data
-
-		console.log(data)
+			data: {
+				socialNetworkOAuthLogin: { accessToken }
+			}
+		} = await resSocialJSON
 
 		localStorage.setItem('accessToken', accessToken)
 		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
