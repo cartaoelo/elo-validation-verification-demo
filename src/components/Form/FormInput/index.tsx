@@ -3,13 +3,12 @@ import { FormProp } from '../../../types/form'
 import { FormDivStyled, FormInputStyled, FormInputIcon } from './FormInput.styled'
 
 const FormInput = forwardRef<any, FormProp>(function FormInput(
-	{ name, calendar, mask, boxIcons, ...rest },
+	{ name, mask, boxIcons, ...rest },
 	ref
 ) {
 	return (
 		<FormDivStyled>
 			<FormInputStyled
-				calendar={calendar}
 				placeholder={name.charAt(0).toUpperCase() + name.slice(1)}
 				inputRef={ref}
 				mask={mask}

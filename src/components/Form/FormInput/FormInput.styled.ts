@@ -15,8 +15,7 @@ export const FormInputStyled = styled(MaskedInput)`
 	background-color: #e6e6e6;
 	height: 62px;
 	border-radius: 5px;
-	padding: ${({ calendar }: { calendar: boolean }) =>
-		calendar ? '0 30px 0 65px' : '0 30px 0 65px'};
+	padding: 0 30px 0 65px;
 
 	&:focus {
 		border: 0.5px solid #686868;
