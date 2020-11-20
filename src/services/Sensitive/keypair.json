@@ -1,0 +1,17 @@
+{
+	"pair": {
+		"kty": "EC",
+		"kid": "test",
+		"crv": "P-256",
+		"x": "cs2ScWdHlIa0z51c9trVGZZcoitEYHQMFqTCRquQ4gg",
+		"y": "PakHqqyjdw557wiypGvD5XnYsaeeKGF9E-GdprlZTOY",
+		"d": "nl33b8X1Lo4poAvqCY11lihp12zzmSNcxZBOWx_jJ5g"
+	},
+	"public": {
+		"kty": "EC",
+		"kid": "test",
+		"crv": "P-256",
+		"x": "cs2ScWdHlIa0z51c9trVGZZcoitEYHQMFqTCRquQ4gg",
+		"y": "PakHqqyjdw557wiypGvD5XnYsaeeKGF9E-GdprlZTOY"
+	}
+}
