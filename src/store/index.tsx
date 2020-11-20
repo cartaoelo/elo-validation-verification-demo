@@ -4,7 +4,8 @@ import { ContextTypes } from '../types/context'
 
 export const AppContextDefaultValue: ContextTypes = {
 	access_token: '',
-	sensitive: ''
+	sensitive: '',
+	cpf: ''
 }
 
 AppContextDefaultValue.access_token = localStorage.getItem('accessToken')

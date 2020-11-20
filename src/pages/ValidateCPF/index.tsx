@@ -1,5 +1,5 @@
+import React, { useContext, useReducer, useState } from 'react'
 import iziToast from 'izitoast'
-import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
@@ -13,6 +13,7 @@ import AppContext from '../../store'
 import ValidateCPFContainerStyled from '../../styles/CPF/ValidateCPF.styled'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 import { Score } from '../../types/cpf'
+import { ContextActions, ContextTypes } from '../../types/context'
 
 const { client_id } = args
 
@@ -26,9 +27,26 @@ interface StateCPF {
 
 const ValidateCPF = () => {
 	const history = useHistory()
-	const { access_token } = useContext(AppContext)
 
-	console.log(access_token)
+	const { access_token, cpf } = useContext(AppContext)
+
+	const [state, dispatch] = useReducer(
+		(state: Pick<ContextTypes, 'cpf'>, { type, payload }: ContextActions) => {
+			switch (type) {
+				case 'CHANGE_CPF':
+					return {
+						...state,
+						cpf: payload
+					}
+
+				default:
+					return state
+			}
+		},
+		{
+			cpf: ''
+		}
+	)
 
 	const { register, handleSubmit } = useForm({ mode: 'all' })
 
@@ -42,7 +60,12 @@ const ValidateCPF = () => {
 
 	const onSubmit = async values => {
 		console.log(values)
-		const formatedCPF = values.cpf.replace(/[.-]/g, '')
+		const formatedCPF: string = values.cpf.replace(/[.-]/g, '')
+
+		dispatch({
+			type: 'CHANGE_CPF',
+			payload: formatedCPF
+		})
 
 		if (!formatedCPF) iziToast.error({ title: 'erro', message: 'CPF inválido' })
 
@@ -58,7 +81,7 @@ const ValidateCPF = () => {
 		if (profileCall.ok) {
 			const profileResponse = await profileCall.json()
 
-			console.log(profileResponse)
+			console.log('[profileResponse]', profileResponse)
 
 			const { score }: { score: Score } = profileResponse.data.verifyProfileScore
 
@@ -87,9 +110,6 @@ const ValidateCPF = () => {
 				/>
 				<FormButtonStyled disabled={stateCPF.buttonLoading} type="submit">
 					{stateCPF.buttonText}
-				</FormButtonStyled>
-				<FormButtonStyled onClick={() => history.push(ADDCARD)}>
-					Adicionar cartão
 				</FormButtonStyled>
 			</FormStyled>
 			<Modal
