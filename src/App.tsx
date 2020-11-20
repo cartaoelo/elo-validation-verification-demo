@@ -20,9 +20,9 @@ function App() {
 					<Switch>
 						<BackgroundContainerStyled>
 							<Route exact component={Home} path={HOME} />
-							<PrivateRoute exact component={AddCard} path={ADDCARD} />
 							<PrivateRoute exact component={ValidateCPF} path={VALIDATECPF} />
-							<Route component={() => <Redirect to={HOME} />} />
+							<PrivateRoute exact component={AddCard} path={ADDCARD} />
+							{/* <Route component={() => <Redirect to={ADDCARD} />} /> */}
 						</BackgroundContainerStyled>
 					</Switch>
 				</Router>
