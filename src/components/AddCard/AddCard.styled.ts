@@ -18,7 +18,8 @@ const AddCardStyled = styled.div`
 	}
 
 	@media only screen and (max-width: 768px) {
-		width: 80%;
+		width: 95%;
+		padding: 20px 10px 10px;
 	}
 
 	@keyframes slideFromBottom {

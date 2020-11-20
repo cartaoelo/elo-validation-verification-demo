@@ -1,13 +1,28 @@
 import iziToast from 'izitoast'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import AddCardStyled from '../../components/AddCard/AddCard.styled'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
 import FormInput from '../../components/Form/FormInput'
 import FormMonthYearStyled from '../../components/Form/FormMonthYear/FormMonthYear.styled'
+import RadioButton from '../../components/RadioButton'
+import {
+	RadioContainerStyled,
+	RadioDivStyled
+} from '../../components/RadioButton/RadioButton.styled'
+import { args } from '../../configs/api'
+import { callAPI } from '../../services/graphQL/api'
+import { VERIFY_PAYMENT_ACCOUNT } from '../../services/graphQL/Mutations'
+import { SERVER_KEYS } from '../../services/graphQL/Queries'
+import { encryptCardData } from '../../services/Sensitive'
+import AppContext from '../../store'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 
+const { client_id } = args
+
 const AddCard = () => {
+	const { access_token, cpf } = useContext(AppContext)
+
 	const { handleSubmit, register } = useForm({
 		criteriaMode: 'all',
 		mode: 'onSubmit',
@@ -17,12 +32,12 @@ const AddCard = () => {
 	const [stateCard, setStateCard] = useState({
 		ended: false,
 		buttonLoading: false,
-		buttonText: ''
+		buttonText: 'Adicionar',
+		modalText: '',
+		modalShow: false
 	})
 
 	const onSubmit = handleSubmit(async values => {
-		console.log(values)
-
 		return ''
 	})
 
@@ -75,10 +90,36 @@ const AddCard = () => {
 					required
 					boxIcons={{ name: 'user', type: 'solid' }}
 					name="name"
-					ref={register}
+					ref={register({ required: true })}
 				/>
+				<FormInput
+					required
+					type="password"
+					boxIcons={{ name: 'credit-card-front', type: 'solid' }}
+					maxLength={3}
+					name="csv"
+					ref={register({ required: true, maxLength: 3 })}
+				/>
+				<RadioContainerStyled>
+					<h3>Tipo de cartão:</h3>
+					<RadioDivStyled>
+						<RadioButton
+							option="Crédito"
+							optionValue="CREDIT"
+							defaultChecked={true}
+							ref={register({ required: true })}
+							name="type"
+						/>
+						<RadioButton
+							option="Débito"
+							optionValue="DEBIT"
+							ref={register({ required: true })}
+							name="type"
+						/>
+					</RadioDivStyled>
+				</RadioContainerStyled>
 				<FormButtonStyled type="submit" disabled={stateCard.ended}>
-					Adicionar
+					{stateCard.buttonText}
 				</FormButtonStyled>
 			</FormStyled>
 		</AddCardStyled>
