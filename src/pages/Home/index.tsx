@@ -116,6 +116,13 @@ const Home = () => {
 			setState: setStateLogin
 		})
 
+		if (resLoginJSON.data === null) {
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Usuário ou senha incorreto (a)!'
+			})
+		}
+
 		const {
 			data: {
 				login: { accessToken }
@@ -179,6 +186,13 @@ const Home = () => {
 		})
 
 		if (!errorHandler) return errorHandler
+
+		if (resSocialJSON !== null) {
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Não há nenhum usuário associado a essa rede social!'
+			})
+		}
 
 		const {
 			data: {
