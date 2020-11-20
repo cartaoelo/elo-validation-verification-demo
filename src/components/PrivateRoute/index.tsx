@@ -7,10 +7,11 @@ import { PrivateProps } from '../../types/routes'
 
 const PrivateRoute: React.FC<PrivateProps> = ({ component, path, exact }) => {
 	const { access_token } = useContext(AppContext)
+	console.log('[access_token]', access_token)
 	return (
 		<Route
 			render={() =>
-				access_token !== '' ? (
+				access_token !== null ? (
 					<Route path={path} exact={exact} component={component} />
 				) : (
 					<Redirect to={HOME} />
