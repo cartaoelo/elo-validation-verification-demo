@@ -55,4 +55,10 @@ export const GlobalStyles = createGlobalStyle`
       }
     }
   }
+
+  @media only screen and (max-width: 600px) {
+    #root {
+      height: 100%;
+    }
+  }
 `

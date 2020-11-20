@@ -1,11 +1,9 @@
 import styled from 'styled-components'
 
 const BackgroundContainerStyled = styled.div`
-	display: flex;
 	flex: 1;
-	height: 100%;
-	width: 100%;
-	background: linear-gradient(-135deg, #00a4e0, #ffcb05);
+	padding: 20px;
+	display: flex;
 	align-items: center;
 	justify-content: center;
 `
