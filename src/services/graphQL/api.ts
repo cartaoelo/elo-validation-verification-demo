@@ -7,7 +7,7 @@ export const callAPI = async ({
 	headers
 }: {
 	client_id: string
-	variables: Record<string, unknown>
+	variables?: Record<string, unknown>
 	query: string
 	headers?: Record<string, unknown>
 }): Promise<Response> => {

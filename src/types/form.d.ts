@@ -6,3 +6,8 @@ export interface FormProp extends React.ComponentPropsWithoutRef<'input'> {
 	name: string
 	mask?: string | (string | RegExp)[]
 }
+
+export interface RadioProp extends React.ComponentPropsWithoutRef<'input'> {
+	option: 'Crédito' | 'Débito'
+	optionValue: 'CREDIT' | 'DEBIT'
+}

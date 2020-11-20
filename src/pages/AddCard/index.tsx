@@ -38,7 +38,68 @@ const AddCard = () => {
 	})
 
 	const onSubmit = handleSubmit(async values => {
-		return ''
+		console.log('[values]', values)
+		const data = {
+			pan: values.pan.trim(),
+			expiry: {
+				month: values.mês,
+				year: values.year
+			},
+			name: values.name,
+			csv: values.csv.trim()
+		}
+
+		console.log('[jsonCard]', JSON.stringify(data))
+
+		setStateCard({ ...stateCard, buttonLoading: true, buttonText: 'Validando...' })
+
+		const keysCall = await callAPI({
+			client_id,
+			query: SERVER_KEYS,
+			headers: { access_token }
+		})
+
+		if (!keysCall.ok) console.log(keysCall)
+
+		const keysResponse = await keysCall.json()
+
+		console.log('[keysResponse]', keysResponse)
+		const {
+			data: {
+				serverPublicKey: { key }
+			}
+		} = keysResponse
+
+		const { sensitive } = await encryptCardData({
+			eloKey: key,
+			cardData: JSON.stringify(data)
+		})
+
+		console.log('[sensitive]', sensitive)
+
+		if (!sensitive) console.log('[sensitive erro]', sensitive)
+
+		const verify = await callAPI({
+			client_id,
+			query: VERIFY_PAYMENT_ACCOUNT,
+			headers: {
+				access_token,
+				client_id
+			},
+			variables: {
+				cpf,
+				sensitive,
+				type: values.type
+			}
+		})
+
+		console.log(verify)
+
+		return setStateCard({
+			...stateCard,
+			buttonLoading: false,
+			buttonText: 'Adicionar'
+		})
 	})
 
 	return (
