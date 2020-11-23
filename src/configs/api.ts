@@ -4,10 +4,16 @@ import { encodeBase64 } from '../utils/base64'
 config()
 
 export const args = {
-	client_id: '06ba261f-cdac-312b-a6e4-8ce46871484b',
-	secret: '68b7fa71-64e6-38a0-809c-b76eafe8cdc0',
+	// Client_id da sua aplicação fornecido no Portal Elo
+	client_id: '',
+	// Secret da sua aplicação fornecido no Portal Elo
+	secret: '',
+	// Base Url da aplicação ELO, retire o hml- para rodar em ambiente de produção
 	graphQLurl: 'https://hml-api.elo.com.br/graphql',
+	// Authorização em Basic, não é necessário preencher, visto que a aplicação irá fazer o encode com o Client_id e Secret fornecidos
 	authorization: '',
-	google_id: '243903624765-kegrdj4kkmcno9u13frb4qcbb76n43mp.apps.googleusercontent.com'
+	// ID Google OAuth vindo do seu app vindos do app na plataforma do Google Cloud
+	google_id: ''
 }
+
 args.authorization = `Basic ${encodeBase64(`${args.client_id}:${args.secret}`)}`
