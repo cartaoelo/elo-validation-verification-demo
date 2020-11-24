@@ -2,8 +2,13 @@ interface ErrorProps {
 	status: number | string
 }
 
+interface ErrorHandler {
+	text: string
+	json: { error: string }
+}
+
 const errorHandler = ({ status }: ErrorProps) => {
-	let erro
+	let erro: ErrorHandler
 	switch (status) {
 		case 401:
 			erro = {

@@ -11,6 +11,8 @@ import {
 	RadioDivStyled
 } from '../../components/RadioButton/RadioButton.styled'
 import { args } from '../../configs/api'
+import { HOME } from '../../constants/routes'
+import callApiErrorHandler from '../../services/Error/callApiErrorHandler'
 import { callAPI } from '../../services/graphQL/api'
 import { VERIFY_PAYMENT_ACCOUNT } from '../../services/graphQL/Mutations'
 import { SERVER_KEYS } from '../../services/graphQL/Queries'
@@ -32,9 +34,7 @@ const AddCard = () => {
 	const [stateCard, setStateCard] = useState({
 		ended: false,
 		buttonLoading: false,
-		buttonText: 'Adicionar',
-		modalText: '',
-		modalShow: false
+		buttonText: 'Adicionar'
 	})
 
 	const onSubmit = handleSubmit(async values => {
@@ -59,16 +59,29 @@ const AddCard = () => {
 			headers: { access_token }
 		})
 
-		if (!keysCall.ok) console.log(keysCall)
+		const resKeysJSON = await keysCall.json()
 
-		const keysResponse = await keysCall.json()
+		const errorHandler = callApiErrorHandler({
+			call: keysCall,
+			res: resKeysJSON,
+			state: stateCard,
+			setState: setStateCard
+		})
 
-		console.log('[keysResponse]', keysResponse)
+		if (!errorHandler) return errorHandler
+
+		if (keysCall !== null) {
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Não foi possível acessar a chamada!'
+			})
+		}
+
 		const {
 			data: {
 				serverPublicKey: { key }
 			}
-		} = keysResponse
+		} = resKeysJSON
 
 		const { sensitive } = await encryptCardData({
 			eloKey: key,
@@ -79,7 +92,7 @@ const AddCard = () => {
 
 		if (!sensitive) console.log('[sensitive erro]', sensitive)
 
-		const verify = await callAPI({
+		const verifyCall = await callAPI({
 			client_id,
 			query: VERIFY_PAYMENT_ACCOUNT,
 			headers: {
@@ -93,12 +106,35 @@ const AddCard = () => {
 			}
 		})
 
-		console.log(verify)
+		const resVerifyJSON = await verifyCall.json()
 
-		return setStateCard({
+		const errorVerifyHandler = callApiErrorHandler({
+			call: verifyCall,
+			res: resVerifyJSON,
+			state: stateCard,
+			setState: setStateCard
+		})
+
+		if (!errorVerifyHandler) return errorVerifyHandler
+
+		if (verifyCall !== null) {
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Não foi possível acessar a chamada!'
+			})
+		}
+
+		const { status } = resVerifyJSON.data.verifyPaymentAccount
+
+		setStateCard({
 			...stateCard,
 			buttonLoading: false,
-			buttonText: 'Adicionar'
+			buttonText: 'Validar Cartão'
+		})
+
+		return iziToast.success({
+			title: 'Sucesso',
+			message: `O status desse cartão é: ${status}`
 		})
 	})
 

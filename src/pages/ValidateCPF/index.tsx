@@ -14,6 +14,7 @@ import ValidateCPFContainerStyled from '../../styles/CPF/ValidateCPF.styled'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 import { Score } from '../../types/cpf'
 import { ContextActions, ContextTypes } from '../../types/context'
+import callApiErrorHandler from '../../services/Error/callApiErrorHandler'
 
 const { client_id } = args
 
@@ -78,23 +79,37 @@ const ValidateCPF = () => {
 			headers: { access_token }
 		})
 
-		if (profileCall.ok) {
-			const profileResponse = await profileCall.json()
+		const resProfileJSON = await profileCall.json()
 
-			console.log('[profileResponse]', profileResponse)
+		const errorHandler = callApiErrorHandler({
+			call: profileCall,
+			res: resProfileJSON,
+			state: stateCPF,
+			setState: setStateCPF
+		})
 
-			const { score }: { score: Score } = profileResponse.data.verifyProfileScore
+		if (!errorHandler) return errorHandler
 
-			return setStateCPF({
-				...stateCPF,
-				modalText: JSON.stringify(score, null, 2),
-				modalShow: true,
-				buttonLoading: false,
-				buttonText: 'Validar CPF'
+		if (resProfileJSON === null) {
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Não foi possível acessar o perfil!'
 			})
-		} else {
-			console.log('top', await profileCall.json())
 		}
+
+		const profileResponse = await profileCall.json()
+
+		console.log('[profileResponse]', profileResponse)
+
+		const { score }: { score: Score } = profileResponse.data.verifyProfileScore
+
+		return setStateCPF({
+			...stateCPF,
+			modalText: JSON.stringify(score, null, 2),
+			modalShow: true,
+			buttonLoading: false,
+			buttonText: 'Validar CPF'
+		})
 	}
 
 	return (
