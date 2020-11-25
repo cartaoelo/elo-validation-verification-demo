@@ -68,9 +68,23 @@ const AddCard = () => {
 			setState: setStateCard
 		})
 
-		if (!errorHandler) return errorHandler
+		if (!errorHandler) {
+			setStateCard({
+				...stateCard,
+				buttonLoading: false,
+				buttonText: 'Validar'
+			})
+
+			return errorHandler
+		}
 
 		if (keysCall !== null) {
+			setStateCard({
+				...stateCard,
+				buttonLoading: false,
+				buttonText: 'Validar'
+			})
+
 			return iziToast.error({
 				title: 'Erro',
 				message: 'Não foi possível acessar a chamada!'
