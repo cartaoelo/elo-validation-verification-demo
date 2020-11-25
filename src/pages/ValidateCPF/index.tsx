@@ -97,11 +97,7 @@ const ValidateCPF = () => {
 			})
 		}
 
-		const profileResponse = await profileCall.json()
-
-		console.log('[profileResponse]', profileResponse)
-
-		const { score }: { score: Score } = profileResponse.data.verifyProfileScore
+		const { score }: { score: Score } = resProfileJSON.data.verifyProfileScore
 
 		return setStateCPF({
 			...stateCPF,
