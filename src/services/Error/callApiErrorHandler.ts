@@ -22,7 +22,6 @@ const callApiErrorHandler = async ({
 			error: true,
 			errorValue: erro
 		})
-		console.log('chegou até aqui2 e o gui é gay')
 		iziToast.error({
 			title: 'Erro',
 			message: `Houve um erro na chamada da API ao Portal, descrição do erro: ${erro.text}`
@@ -31,7 +30,8 @@ const callApiErrorHandler = async ({
 	}
 
 	if (res.data === null) {
-		const { code, description } = JSON.parse(res.errors[0].message)[0]
+		const errorJSON = JSON.parse(res.errors[0].message)
+		const { code, description } = errorJSON[0] || errorJSON
 		setState({
 			...state,
 			error: true,

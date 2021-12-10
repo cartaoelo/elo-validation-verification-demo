@@ -65,7 +65,6 @@ const Home = () => {
 	)
 
 	const onSubmit = handleSubmit(async values => {
-		console.log('[values]', values)
 		const { username, password } = values
 		if (username === '' || password === '') {
 			setStateLogin({ ...stateLogin, errorFields: true })
@@ -132,8 +131,6 @@ const Home = () => {
 		} = resLoginJSON
 
 		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
-		console.log('reducer', state.access_token)
-		console.log('state', state.access_token)
 
 		localStorage.setItem('accessToken', accessToken)
 
@@ -159,7 +156,6 @@ const Home = () => {
 	})
 
 	const onSocialLogin = async response => {
-		console.log('[google response]', response)
 		const {
 			tokenId,
 			profileObj
@@ -225,9 +221,6 @@ const Home = () => {
 		localStorage.setItem('accessToken', accessToken)
 		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
 
-		console.log('reducer', state.access_token)
-		console.log('state', state.access_token)
-
 		iziToast.success({
 			title: 'Sucesso',
 			message: `Aqui está seu Access Token: ${accessToken}`
@@ -271,7 +264,6 @@ const Home = () => {
 				buttonText="Google"
 				onSuccess={onSocialLogin}
 				onFailure={e => {
-					console.log(e)
 					setStateLogin({ ...stateLogin, googleDisabled: true })
 				}}
 				disabled={stateLogin.googleDisabled}

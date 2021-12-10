@@ -60,7 +60,11 @@ const ValidateCPF = () => {
 	})
 
 	const onSubmit = async values => {
-		console.log(values)
+		if (JSON.stringify(values) === '{}')
+			return iziToast.error({
+				title: 'Erro',
+				message: 'Erro interno, recarregue a página!'
+			})
 		const formatedCPF: string = values.cpf.replace(/[.-]/g, '')
 
 		dispatch({
@@ -90,10 +94,10 @@ const ValidateCPF = () => {
 
 		if (!errorHandler) return errorHandler
 
-		if (resProfileJSON === null) {
+		if (resProfileJSON === null || !resProfileJSON.data) {
 			return iziToast.error({
 				title: 'Erro',
-				message: 'Não foi possível acessar o perfil!'
+				message: 'Não foi possível acessar o perfil! Verifique o CPF informado.'
 			})
 		}
 

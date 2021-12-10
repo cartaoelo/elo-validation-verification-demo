@@ -7,7 +7,6 @@ import { PrivateProps } from '../../types/routes'
 
 const PrivateRoute: React.FC<PrivateProps> = ({ component, path, exact }) => {
 	const { access_token } = useContext(AppContext)
-	console.log('[access_token]', access_token)
 	return (
 		<Route
 			render={() =>
