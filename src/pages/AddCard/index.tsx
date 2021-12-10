@@ -38,18 +38,15 @@ const AddCard = () => {
 	})
 
 	const onSubmit = handleSubmit(async values => {
-		console.log('[values]', values)
 		const data = {
-			pan: values.pan.trim(),
+			pan: values.pan.trim().replace(' ', ''),
 			expiry: {
 				month: values.mês,
 				year: values.year
 			},
 			name: values.name,
-			csv: values.csv.trim()
+			csv: values.csv.trim().replace(' ', '')
 		}
-
-		console.log('[jsonCard]', JSON.stringify(data))
 
 		setStateCard({ ...stateCard, buttonLoading: true, buttonText: 'Validando...' })
 
@@ -78,7 +75,7 @@ const AddCard = () => {
 			return errorHandler
 		}
 
-		if (keysCall !== null) {
+		if (!keysCall) {
 			setStateCard({
 				...stateCard,
 				buttonLoading: false,
@@ -101,8 +98,6 @@ const AddCard = () => {
 			eloKey: key,
 			cardData: JSON.stringify(data)
 		})
-
-		console.log('[sensitive]', sensitive)
 
 		if (!sensitive) console.log('[sensitive erro]', sensitive)
 
@@ -131,10 +126,16 @@ const AddCard = () => {
 
 		if (!errorVerifyHandler) return errorVerifyHandler
 
-		if (verifyCall !== null) {
+		if (!resVerifyJSON.data || !resVerifyJSON.data.verifyPaymentAccount) {
+			setStateCard({
+				...stateCard,
+				buttonLoading: false,
+				buttonText: 'Validar Cartão'
+			})
+
 			return iziToast.error({
 				title: 'Erro',
-				message: 'Não foi possível acessar a chamada!'
+				message: resVerifyJSON.errors[0].message
 			})
 		}
 
