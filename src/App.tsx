@@ -1,11 +1,10 @@
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import PrivateRoute from './components/PrivateRoute'
 
 import { HOME, ADDCARD, VALIDATECPF } from './constants/routes'
 
 import Home from './pages/Home'
-import AppContext, { AppContextDefaultValue } from './store'
 
 import AppStyled from './styles/App.styled'
 import BackgroundContainerStyled from './styles/Background'
@@ -14,20 +13,17 @@ import ValidateCPF from './pages/ValidateCPF'
 
 function App() {
 	return (
-		<AppContext.Provider value={AppContextDefaultValue}>
-			<AppStyled className="App">
-				<Router>
-					<Switch>
-						<BackgroundContainerStyled>
-							<Route exact component={Home} path={HOME} />
-							<PrivateRoute exact component={ValidateCPF} path={VALIDATECPF} />
-							<PrivateRoute exact component={AddCard} path={ADDCARD} />
-							{/* <Route component={() => <Redirect to={ADDCARD} />} /> */}
-						</BackgroundContainerStyled>
-					</Switch>
-				</Router>
-			</AppStyled>
-		</AppContext.Provider>
+		<AppStyled className="App">
+			<Router>
+				<Switch>
+					<BackgroundContainerStyled>
+						<Route exact component={Home} path={HOME} />
+						<PrivateRoute exact component={ValidateCPF} path={VALIDATECPF} />
+						<PrivateRoute exact component={AddCard} path={ADDCARD} />
+					</BackgroundContainerStyled>
+				</Switch>
+			</Router>
+		</AppStyled>
 	)
 }
 

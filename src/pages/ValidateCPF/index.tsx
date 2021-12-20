@@ -1,20 +1,17 @@
-import React, { useContext, useReducer, useState } from 'react'
+import React, { useState } from 'react'
 import iziToast from 'izitoast'
 import { useForm } from 'react-hook-form'
-import { useHistory } from 'react-router-dom'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
 import FormInput from '../../components/Form/FormInput'
 import Modal from '../../components/Modal'
 import { args } from '../../configs/api'
-import { ADDCARD } from '../../constants/routes'
 import { callAPI } from '../../services/graphQL/api'
 import { VERIFY_PROFILE_SCORE } from '../../services/graphQL/Mutations'
-import AppContext from '../../store'
 import ValidateCPFContainerStyled from '../../styles/CPF/ValidateCPF.styled'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 import { Score } from '../../types/cpf'
-import { ContextActions, ContextTypes } from '../../types/context'
 import callApiErrorHandler from '../../services/Error/callApiErrorHandler'
+import { useAppContext } from '../../context/AppContext'
 
 const { client_id } = args
 
@@ -27,27 +24,10 @@ interface StateCPF {
 }
 
 const ValidateCPF = () => {
-	const history = useHistory()
-
-	const { access_token, cpf } = useContext(AppContext)
-
-	const [state, dispatch] = useReducer(
-		(state: Pick<ContextTypes, 'cpf'>, { type, payload }: ContextActions) => {
-			switch (type) {
-				case 'CHANGE_CPF':
-					return {
-						...state,
-						cpf: payload
-					}
-
-				default:
-					return state
-			}
-		},
-		{
-			cpf: ''
-		}
-	)
+	const {
+		appContextState: { access_token },
+		setAppContextState
+	} = useAppContext()
 
 	const { register, handleSubmit } = useForm({ mode: 'all' })
 
@@ -67,9 +47,9 @@ const ValidateCPF = () => {
 			})
 		const formatedCPF: string = values.cpf.replace(/[.-]/g, '')
 
-		dispatch({
-			type: 'CHANGE_CPF',
-			payload: formatedCPF
+		setAppContextState({
+			access_token,
+			cpf: formatedCPF
 		})
 
 		if (!formatedCPF) iziToast.error({ title: 'erro', message: 'CPF inválido' })

@@ -1,5 +1,5 @@
 import iziToast from 'izitoast'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import AddCardStyled from '../../components/AddCard/AddCard.styled'
 import FormButtonStyled from '../../components/Form/FormButton/FormButton.styled'
@@ -11,19 +11,20 @@ import {
 	RadioDivStyled
 } from '../../components/RadioButton/RadioButton.styled'
 import { args } from '../../configs/api'
-import { HOME } from '../../constants/routes'
+import { useAppContext } from '../../context/AppContext'
 import callApiErrorHandler from '../../services/Error/callApiErrorHandler'
 import { callAPI } from '../../services/graphQL/api'
 import { VERIFY_PAYMENT_ACCOUNT } from '../../services/graphQL/Mutations'
 import { SERVER_KEYS } from '../../services/graphQL/Queries'
 import { encryptCardData } from '../../services/Sensitive'
-import AppContext from '../../store'
 import FormStyled from '../../styles/Home/LoginForm.styled'
 
 const { client_id } = args
 
 const AddCard = () => {
-	const { access_token, cpf } = useContext(AppContext)
+	const {
+		appContextState: { access_token, cpf }
+	} = useAppContext()
 
 	const { handleSubmit, register } = useForm({
 		criteriaMode: 'all',

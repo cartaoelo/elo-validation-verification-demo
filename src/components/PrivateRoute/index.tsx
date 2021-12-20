@@ -1,12 +1,14 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Redirect, Route } from 'react-router-dom'
 import { HOME } from '../../constants/routes'
-import AppContext from '../../store'
+import { useAppContext } from '../../context/AppContext'
 
 import { PrivateProps } from '../../types/routes'
 
 const PrivateRoute: React.FC<PrivateProps> = ({ component, path, exact }) => {
-	const { access_token } = useContext(AppContext)
+	const {
+		appContextState: { access_token }
+	} = useAppContext()
 	return (
 		<Route
 			render={() =>

@@ -25,6 +25,7 @@ import { VALIDATECPF } from '../../constants/routes'
 import { useForm } from 'react-hook-form'
 
 import copy from 'copy-to-clipboard'
+import { useAppContext } from '../../context/AppContext'
 
 interface FormData {
 	username: string
@@ -38,6 +39,8 @@ const Home = () => {
 
 	const history = useHistory()
 
+	const { setAppContextState } = useAppContext()
+
 	const [stateLogin, setStateLogin] = useState({
 		error: false,
 		errorValue: '',
@@ -45,24 +48,6 @@ const Home = () => {
 		googleDisabled: false,
 		ended: false
 	})
-
-	const [state, dispatch] = useReducer(
-		(state: Pick<ContextTypes, 'access_token'>, { type, payload }: ContextActions) => {
-			switch (type) {
-				case 'CHANGE_ACCESSTOKEN':
-					return {
-						...state,
-						access_token: payload
-					}
-
-				default:
-					return state
-			}
-		},
-		{
-			access_token: ''
-		}
-	)
 
 	const onSubmit = handleSubmit(async values => {
 		const { username, password } = values
@@ -130,29 +115,18 @@ const Home = () => {
 			}
 		} = resLoginJSON
 
-		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
-
-		localStorage.setItem('accessToken', accessToken)
+		setStateLogin({
+			...stateLogin,
+			error: false
+		})
+		setAppContextState({ access_token: accessToken, cpf: '' })
 
 		iziToast.success({
 			title: 'Sucesso',
 			message: `Aqui está seu Access Token: ${accessToken}`
 		})
 
-		setTimeout(() => {
-			iziToast.info({
-				title: 'Aviso',
-				message: 'Estamos te redirecionando para a próxima tela',
-				timeout: 3000
-			})
-		}, 2000)
-		setTimeout(() => setStateLogin({ ...stateLogin, ended: true }), 4500)
-		setTimeout(() => history.push(VALIDATECPF), 5000)
-
-		setStateLogin({
-			...stateLogin,
-			error: false
-		})
+		history.push(VALIDATECPF)
 	})
 
 	const onSocialLogin = async response => {
@@ -218,8 +192,7 @@ const Home = () => {
 			}
 		} = await resSocialJSON
 
-		localStorage.setItem('accessToken', accessToken)
-		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
+		setAppContextState({ access_token: accessToken, cpf: '' })
 
 		iziToast.success({
 			title: 'Sucesso',
